@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
             background: white;
             padding: 25px;
@@ -62,11 +62,27 @@
             font-size: 14px;
             color: #f0ad4e;
             font-weight: 600;
-            margin: 2px 0;
+            margin: 4px 0;
         }
         .scammer-info {
             font-size: 14px;
             color: #555;
+            margin-bottom: 6px;
+        }
+        .scammer-meta {
+            font-size: 12px;
+            color: #888;
+            background: #f9f9f9;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        .scammer-proof a {
+            color: #337ab7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .scammer-proof a:hover {
+            text-decoration: underline;
         }
         .no-result {
             text-align: center;
@@ -74,36 +90,83 @@
             padding: 20px;
             display: none;
         }
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🎮 Database Blacklist Scammer</h2>
-    <p class="subtitle">Cari nama, ID game, atau kontak penipu sebelum melakukan transaksi.</p>
+    <p class="subtitle">Cari nama, kontak, atau informasi penipu secara real-time.</p>
     
-    <!-- Kolom Pencarian -->
-    <input type="text" id="searchInput" class="search-box" placeholder="Ketik nama, game, atau info lainnya..." oninput="searchScammer()">
+    <input type="text" id="searchInput" class="search-box" placeholder="Ketik nama scammer, kontak, atau game..." oninput="searchScammer()" disabled>
 
-    <!-- Wadah List Data -->
+    <div id="loadingStatus" class="loading">Menghubungkan ke Google Sheets...</div>
     <div id="scammerList"></div>
     <div id="noResult" class="no-result">Data tidak ditemukan. Tetap waspada!</div>
 </div>
 
 <script>
-    // INPUT DATA SCAMMER DI SINI
-    // Kamu bisa menambah baris baru sesuai format yang ada
-    const scammerData = [
-        { name: "Budi_Gamer99", game: "Mobile Legends", info: "ID: 12345678, Modus: Jual beli akun via pulsa palsu" },
-        { name: "Rian_TopUp", game: "Free Fire", info: "No WA: 08123456789, Modus: Jual diamond ilegal harganya miring" },
-        { name: "Siska_Store", game: "PUBG Mobile", info: "ID: 98765432, Modus: Rekber kloningan / palsu" },
-        { name: "Xyz_Gamer", game: "Genshin Impact", info: "Modus: Akun di-hack balik setelah dijual" }
-    ];
+    // Link CSV Google Sheets kamu yang sudah dikonversi untuk export data
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1YXbAQGsxEgFmy4oxX8cOeCynRdyoMRjydpxe2HzsyuM/export?format=csv";
+    
+    let scammerData = [];
+
+    // Fungsi membaca data CSV dan memprosesnya
+    async function fetchSheetsData() {
+        try {
+            const response = await fetch(csvUrl);
+            const csvText = await response.text();
+            
+            // Parsing CSV sederhana (memisahkan berdasarkan baris)
+            const rows = csvText.split("\n");
+            
+            // Looping dimulai dari indeks 1 untuk melewati baris header pertama (baris judul kolom)
+            for (let i = 1; i < rows.length; i++) {
+                if (!rows[i].trim()) continue; // Skip jika baris kosong
+                
+                // Memisahkan kolom dengan regex agar aman dari koma di dalam tanda kutip teks
+                const columns = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                if (columns.length >= 6) {
+                    // Membersihkan tanda kutip ganda ekstra jika ada di teks
+                    const clean = (text) => text ? text.replace(/^"|"$/g, '').trim() : '';
+
+                    scammerData.push({
+                        submissionId: clean(columns[0]),
+                        responderId: clean(columns[1]),
+                        submittedAt: clean(columns[2]),
+                        gameOrAnything: clean(columns[3]), // Kolom "-write anything-"
+                        name: clean(columns[4]),           // Scammer Nickname
+                        contact: clean(columns[5]),        // Scammer Contact Info
+                        evidence: clean(columns[6]),       // Evidence/Proofs
+                        reporter: clean(columns[7]),       // Reporter
+                        victim: clean(columns[8]),         // Victim
+                        times: clean(columns[9])           // Times it happen
+                    });
+                }
+            }
+
+            document.getElementById('loadingStatus').style.display = 'none';
+            document.getElementById('searchInput').disabled = false;
+            document.getElementById('searchInput').placeholder = "Ketik nama, game, kontak, atau info...";
+            
+            renderData(scammerData);
+
+        } catch (error) {
+            console.error("Gagal memuat data dari Google Sheets:", error);
+            document.getElementById('loadingStatus').innerHTML = "❌ Gagal memuat database. Pastikan akses Google Sheet diatur ke 'Anyone with the link'.";
+        }
+    }
 
     const scammerList = document.getElementById('scammerList');
     const noResult = document.getElementById('noResult');
 
-    // Fungsi untuk menampilkan semua data saat pertama kali load
+    // Fungsi menampilkan data ke HTML
     function renderData(data) {
         scammerList.innerHTML = "";
         if (data.length === 0) {
@@ -115,31 +178,46 @@
         data.forEach(item => {
             const div = document.createElement('div');
             div.className = 'scammer-item';
+            
+            // Logika untuk menampilkan bukti/evidence jika berupa link/URL
+            let evidenceHTML = item.evidence;
+            if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
+                evidenceHTML = `<a href="${item.evidence}" target="_blank">Lihat Bukti Foto/Screenshot 🔗</a>`;
+            }
+
             div.innerHTML = `
-                <span class="scammer-name">${item.name}</span>
-                <span class="scammer-game">Game: ${item.game}</span>
-                <span class="scammer-info">${item.info}</span>
+                <span class="scammer-name">👤 ${item.name || 'Tanpa Nama'}</span>
+                <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
+                <span class="scammer-info">📞 <strong>Kontak/ID:</strong> ${item.contact || '-'}</span>
+                <span class="scammer-info class="scammer-proof"">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
+                <div class="scammer-meta">
+                    🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
+                    🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
+                    📅 <strong>Waktu Kejadian:</strong> ${item.times || '-'}
+                </div>
             `;
             scammerList.appendChild(div);
         });
     }
 
-    // Fungsi Pencarian Real-time
+    // Fungsi Pencarian Real-time (Mencari berdasarkan Nama, Kontak, atau Game)
     function searchScammer() {
         const keyword = document.getElementById('searchInput').value.toLowerCase();
         
         const filteredData = scammerData.filter(item => {
-            return item.name.toLowerCase().includes(keyword) || 
-                   item.game.toLowerCase().includes(keyword) || 
-                   item.info.toLowerCase().includes(keyword);
+            return (item.name && item.name.toLowerCase().includes(keyword)) || 
+                   (item.contact && item.contact.toLowerCase().includes(keyword)) || 
+                   (item.gameOrAnything && item.gameOrAnything.toLowerCase().includes(keyword)) ||
+                   (item.reporter && item.reporter.toLowerCase().includes(keyword));
         });
         
         renderData(filteredData);
     }
 
-    // Jalankan fungsi tampil data pertama kali
-    renderData(scammerData);
+    // Jalankan pengambilan data saat halaman dibuka
+    fetchSheetsData();
 </script>
 
 </body>
 </html>
+
