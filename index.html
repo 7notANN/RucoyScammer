@@ -250,17 +250,32 @@
         return r;
     }
 
-    async function fetchSheetsData() {
+        async function fetchSheetsData() {
         try {
             const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error("Network response problem");
+            if (!response.ok) throw new Error("Network response error");
             
             const csvText = await response.text();
             const rows = parseCSV(csvText);
             
+            // Loop starting from index 1 to bypass the table header row
             for (let i = 1; i < rows.length; i++) {
                 const columns = rows[i];
                 if (columns.length >= 6) {
+                    
+                    let rawEvidence = columns[6] ? columns[6].trim() : '';
+                    let rawReporter = columns[7] ? columns[7].trim() : '';
+                    let rawVictim = columns[8] ? columns[8].trim() : '';
+                    let rawTimes = columns[9] ? columns[9].trim() : '';
+
+                    // FIX LOGIC: If the second image link leaked into the reporter column
+                    if (rawReporter.startsWith('http://') || rawReporter.startsWith('https://')) {
+                        rawEvidence += ', ' + rawReporter; // Combine links into evidence
+                        rawReporter = columns[8] ? columns[8].trim() : 'Anonymous'; // Shift reporter from victim column
+                        rawVictim = columns[9] ? columns[9].trim() : '-'; // Shift victim from times column
+                        rawTimes = columns[10] ? columns[10].trim() : '-'; // Shift times from next column
+                    }
+
                     scammerData.push({
                         submissionId: columns[0] ? columns[0].trim() : '',
                         responderId: columns[1] ? columns[1].trim() : '',
@@ -268,25 +283,25 @@
                         gameOrAnything: columns[3] ? columns[3].trim() : '', 
                         name: columns[4] ? columns[4].trim() : '',           
                         contact: columns[5] ? columns[5].trim() : '',        
-                        evidence: columns[6] ? columns[6].trim() : '',       
-                        reporter: columns[7] ? columns[7].trim() : '',       
-                        victim: columns[8] ? columns[8].trim() : '',         
-                        times: columns[9] ? columns[9].trim() : ''           
+                        evidence: rawEvidence,       
+                        reporter: rawReporter,       
+                        victim: rawVictim,         
+                        times: rawTimes           
                     });
                 }
             }
 
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('searchInput').disabled = false;
-            document.getElementById('searchInput').placeholder = "Type name, game, contact, or info...";
+            document.getElementById('searchInput').placeholder = "Type name, game, contact info, or keywords...";
             
             renderData(scammerData);
 
         } catch (error) {
-            console.error("Failed to load database:", error);
-            document.getElementById('loadingStatus').innerHTML = "❌ Failed to load database. Make sure database access is set to 'Anyone with the link'.'.";
+            console.error("Failed to load data from Google Sheets:", error);
+            document.getElementById('loadingStatus').innerHTML = "❌ Failed to load database. Please ensure the Google Sheet access is set to 'Anyone with the link'.";
         }
-    }
+     }
 
     const scammerList = document.getElementById('scammerList');
     const noResult = document.getElementById('noResult');
