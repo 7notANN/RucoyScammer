@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Blacklist Scammer Game</title>
+    <title>Rucoy Online ScammerL List</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -193,8 +193,8 @@
 <body>
 
 <div class="container">
-    <h2>🎮 Database Blacklist Scammer</h2>
-    <p class="subtitle">Cari nama, kontak, atau informasi penipu secara real-time.</p>
+    <h2>🔥Scammer List</h2>
+    <p class="subtitle">Search for a scammer's name, contact, or information in real-time.</p>
     
     <div class="admin-contact-top">
         <a href="https://wa.me/message/CZPONFJGCVW4L1" target="_blank" class="btn-admin btn-wa-top">💬 WA Admin</a>
@@ -204,14 +204,14 @@
 
     <input type="text" id="searchInput" class="search-box" placeholder="Menghubungkan database..." oninput="searchScammer()" disabled>
 
-    <div id="loadingStatus" class="loading">Menghubungkan ke Google Sheets...</div>
+    <div id="loadingStatus" class="loading">Loading list of scammer..</div>
     <div id="scammerList"></div>
-    <div id="noResult" class="no-result">Data tidak ditemukan. Tetap waspada!</div>
+    <div id="noResult" class="no-result">data not found</div>
 
     <div class="support-box">
-        <div class="support-title">📢 Ingin Melaporkan Scammer atau Butuh Bantuan?</div>
+        <div class="support-title">📢You Want To Report</div>
         <p class="support-desc">
-            Jika kamu baru saja menjadi korban penipuan atau ingin mengajukan banding/sanggahan, silakan isi formulir pengaduan resmi di bawah ini.
+            If you have recently been a victim of scamm or would like to submit a report, please fill out the complaint form below..
         </p>
         
         <a href="https://tally.so/r/LZygZp" target="_blank" class="btn-report">📝 Report Scammer</a>
@@ -253,7 +253,7 @@
     async function fetchSheetsData() {
         try {
             const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error("Respons jaringan bermasalah");
+            if (!response.ok) throw new Error("Network response problem");
             
             const csvText = await response.text();
             const rows = parseCSV(csvText);
@@ -278,13 +278,13 @@
 
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('searchInput').disabled = false;
-            document.getElementById('searchInput').placeholder = "Ketik nama, game, kontak, atau info...";
+            document.getElementById('searchInput').placeholder = "Type name, game, contact, or info...";
             
             renderData(scammerData);
 
         } catch (error) {
-            console.error("Gagal memuat data dari Google Sheets:", error);
-            document.getElementById('loadingStatus').innerHTML = "❌ Gagal memuat database. Pastikan akses Google Sheet diatur ke 'Anyone with the link'.";
+            console.error("Failed to load database:", error);
+            document.getElementById('loadingStatus').innerHTML = "❌ Failed to load database. Make sure database access is set to 'Anyone with the link'.'.";
         }
     }
 
@@ -305,14 +305,14 @@
             
             let evidenceHTML = item.evidence;
             if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
-                evidenceHTML = `<a href="${item.evidence}" target="_blank">Lihat Bukti Foto/Screenshot 🔗</a>`;
+                evidenceHTML = `<a href="${item.evidence}" target="_blank">See proof/Screenshot Evidence 🔗</a>`;
             }
 
             div.innerHTML = `
-                <span class="scammer-name">👤 ${item.name || 'Tanpa Nama'}</span>
+                <span class="scammer-name">👤 ${item.name || 'no name'}</span>
                 <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
-                <span class="scammer-info">📞 <strong>Kontak/ID:</strong> ${item.contact || '-'}</span>
-                <span class="scammer-info">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
+                <span class="scammer-info">📞 <strong>Contak/ID:</strong> ${item.contact || '-'}</span>
+                <span class="scammer-info">📂 <strong>proofs:</strong> ${evidenceHTML || 'No attachments'}</span>
                 <div class="scammer-meta">
                     🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
                     🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
