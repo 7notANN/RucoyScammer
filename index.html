@@ -291,7 +291,7 @@
     const scammerList = document.getElementById('scammerList');
     const noResult = document.getElementById('noResult');
 
-    function renderData(data) {
+        function renderData(data) {
         scammerList.innerHTML = "";
         if (data.length === 0) {
             noResult.style.display = "block";
@@ -303,25 +303,46 @@
             const div = document.createElement('div');
             div.className = 'scammer-item';
             
-            let evidenceHTML = item.evidence;
-            if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
-                evidenceHTML = `<a href="${item.evidence}" target="_blank">See proof/Screenshot🔗</a>`;
+            // LOGIKA BARU: Memproses Bukti/Evidence (bisa mendeteksi jika ada lebih dari 1 link)
+            let evidenceHTML = '';
+            
+            if (item.evidence) {
+                // Memisahkan isi kolom berdasarkan koma atau spasi jika user mengupload lebih dari 1 gambar
+                const proofLinks = item.evidence.split(/[\s,]+/);
+                let linksArray = [];
+                
+                proofLinks.forEach((link, index) => {
+                    const cleanLink = link.trim();
+                    if (cleanLink.startsWith('http://') || cleanLink.startsWith('https://')) {
+                        linksArray.push(`<a href="${cleanLink}" target="_blank">screenshoot/proof ${index + 1} 🔗</a>`);
+                    }
+                });
+                
+                // Jika ditemukan link valid, gabungkan dengan pemisah. Jika tidak, tampilkan teks biasa.
+                if (linksArray.length > 0) {
+                    evidenceHTML = linksArray.join(' | ');
+                } else {
+                    evidenceHTML = item.evidence; // Jika isinya teks biasa/bukan URL
+                }
+            } else {
+                evidenceHTML = 'Tidak ada bukti terlampir';
             }
 
             div.innerHTML = `
                 <span class="scammer-name">👤 ${item.name || 'no name'}</span>
-                <span class="scammer-game">🎮 Description: ${item.gameOrAnything || '-'}</span>
+                <span class="scammer-game">🎮 Descriptions: ${item.details || '-'}</span>
                 <span class="scammer-info">📞 <strong>Contact/ID:</strong> ${item.contact || '-'}</span>
-                <span class="scammer-info">📂 <strong>proofs:</strong> ${evidenceHTML || 'No attachments'}</span>
+                <span class="scammer-info">📂 <strong>proof:</strong> ${evidenceHTML}</span>
                 <div class="scammer-meta">
-                    🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
-                    🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
-                    📅 <strong>date of time:</strong> ${item.times || '-'}
+                    🚨 <strong>reporter:</strong> ${item.reporter || 'Anonim'} | 
+                    🎯 <strong>Victim:</strong> ${item.victim || '-'} | 
+                    📅 <strong>Date of time:</strong> ${item.times || '-'}
                 </div>
             `;
             scammerList.appendChild(div);
         });
-    }
+        }
+    
 
     function searchScammer() {
         const keyword = document.getElementById('searchInput').value.toLowerCase();
