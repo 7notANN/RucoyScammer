@@ -24,16 +24,42 @@
             text-align: center;
             color: #d9534f;
             margin-top: 0;
+            margin-bottom: 5px;
         }
         p.subtitle {
             text-align: center;
             color: #666;
             font-size: 14px;
+            margin-bottom: 15px;
         }
+        
+        /* CSS UNTUK BARIS KONTAK ADMIN DI ATAS */
+        .admin-contact-top {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .btn-admin {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .btn-discord { background-color: #5865F2; }
+        .btn-wa-top { background-color: #25D366; }
+
         .search-box {
             width: 100%;
             padding: 12px;
-            margin: 20px 0;
+            margin: 10px 0 20px 0;
             box-sizing: border-box;
             border: 2px solid #ccc;
             border-radius: 4px;
@@ -95,6 +121,73 @@
             color: #666;
             padding: 20px;
         }
+        
+        /* CSS UNTUK FOOTER (SUPPORT BOX) */
+        .support-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-top: 3px solid #d9534f;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .support-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .support-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        .btn-report {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            background-color: #d9534f;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+        .btn-report:hover { background-color: #c9302c; }
+
+        /* CSS DONASI / DONATION LINKS */
+        .donation-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #555;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .donation-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .btn-donate {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: opacity 0.2s;
+        }
+        .btn-donate:hover { opacity: 0.9; }
+        .btn-paypal { background-color: #003087; }
+        .btn-kofi { background-color: #FF5E5B; }
+        .btn-sociabuzz { background-color: #3b5998; }
     </style>
 </head>
 <body>
@@ -103,18 +196,42 @@
     <h2>🎮 Database Blacklist Scammer</h2>
     <p class="subtitle">Cari nama, kontak, atau informasi penipu secara real-time.</p>
     
-    <input type="text" id="searchInput" class="search-box" placeholder="Ketik nama scammer, kontak, atau game..." oninput="searchScammer()" disabled>
+    <div class="admin-contact-top">
+        <a href="https://wa.me/message/CZPONFJGCVW4L1" target="_blank" class="btn-admin btn-wa-top">💬 WA Admin</a>
+        <span class="btn-admin btn-discord">🎮 Discord: @mihaya7</span>
+        <span class="btn-admin btn-discord">🎮 Discord: @7notann</span>
+    </div>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="Menghubungkan database..." oninput="searchScammer()" disabled>
 
     <div id="loadingStatus" class="loading">Menghubungkan ke Google Sheets...</div>
     <div id="scammerList"></div>
     <div id="noResult" class="no-result">Data tidak ditemukan. Tetap waspada!</div>
+
+    <div class="support-box">
+        <div class="support-title">📢 Ingin Melaporkan Scammer atau Butuh Bantuan?</div>
+        <p class="support-desc">
+            Jika kamu baru saja menjadi korban penipuan atau ingin mengajukan banding/sanggahan, silakan isi formulir pengaduan resmi di bawah ini.
+        </p>
+        
+        <a href="https://tally.so/r/LZygZp" target="_blank" class="btn-report">📝 Report Scammer</a>
+        
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+        
+        <div class="donation-title">☕ Dukung Server & Project Ini</div>
+        <div class="donation-links">
+            <a href="https://paypal.me/wrongsyntax" target="_blank" class="btn-donate btn-paypal">🔷 PayPal</a>
+            <a href="https://kofi.com/mihaya" target="_blank" class="btn-donate btn-kofi">☕ Ko-fi</a>
+            <a href="https://sociabuzz.com/mihaya" target="_blank" class="btn-donate btn-sociabuzz">🚀 SociaBuzz</a>
+        </div>
+    </div>
+
 </div>
 
 <script>
     const csvUrl = "https://docs.google.com/spreadsheets/d/1YXbAQGsxEgFmy4oxX8cOeCynRdyoMRjydpxe2HzsyuM/export?format=csv";
     let scammerData = [];
 
-    // Fungsi canggih untuk memisahkan baris CSV dengan aman
     function parseCSV(text) {
         let p = '', r = [];
         let q = false;
@@ -141,11 +258,8 @@
             const csvText = await response.text();
             const rows = parseCSV(csvText);
             
-            // Loop dimulai dari indeks 1 (melewati baris header atas)
             for (let i = 1; i < rows.length; i++) {
                 const columns = rows[i];
-                
-                // Pastikan kolom terisi minimal sampai data kontak
                 if (columns.length >= 6) {
                     scammerData.push({
                         submissionId: columns[0] ? columns[0].trim() : '',
@@ -156,73 +270,5 @@
                         contact: columns[5] ? columns[5].trim() : '',        
                         evidence: columns[6] ? columns[6].trim() : '',       
                         reporter: columns[7] ? columns[7].trim() : '',       
-                        victim: columns[8] ? columns[8].trim() : '',         
-                        times: columns[9] ? columns[9].trim() : ''           
-                    });
-                }
-            }
-
-            // Sembunyikan loading status jika data berhasil dimuat
-            document.getElementById('loadingStatus').style.display = 'none';
-            document.getElementById('searchInput').disabled = false;
-            document.getElementById('searchInput').placeholder = "Ketik nama, game, kontak, atau info...";
-            
-            renderData(scammerData);
-
-        } catch (error) {
-            console.error("Gagal memuat data dari Google Sheets:", error);
-            document.getElementById('loadingStatus').innerHTML = "❌ Gagal memuat database. Pastikan akses Google Sheet diatur ke 'Anyone with the link'.";
-        }
-    }
-
-    const scammerList = document.getElementById('scammerList');
-    const noResult = document.getElementById('noResult');
-
-    function renderData(data) {
-        scammerList.innerHTML = "";
-        if (data.length === 0) {
-            noResult.style.display = "block";
-            return;
-        }
-        noResult.style.display = "none";
-        
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'scammer-item';
-            
-            let evidenceHTML = item.evidence;
-            if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
-                evidenceHTML = `<a href="${item.evidence}" target="_blank">Lihat Bukti Foto/Screenshot 🔗</a>`;
-            }
-
-            div.innerHTML = `
-                <span class="scammer-name">👤 ${item.name || 'Tanpa Nama'}</span>
-                <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
-                <span class="scammer-info">📞 <strong>Kontak/ID:</strong> ${item.contact || '-'}</span>
-                <span class="scammer-info">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
-                <div class="scammer-meta">
-                    🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
-                    🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
-                    📅 <strong>Waktu Kejadian:</strong> ${item.times || '-'}
-                </div>
-            `;
-            scammerList.appendChild(div);
-        });
-    }
-
-    function searchScammer() {
-        const keyword = document.getElementById('searchInput').value.toLowerCase();
-        const filteredData = scammerData.filter(item => {
-            return (item.name && item.name.toLowerCase().includes(keyword)) || 
-                   (item.contact && item.contact.toLowerCase().includes(keyword)) || 
-                   (item.gameOrAnything && item.gameOrAnything.toLowerCase().includes(keyword));
-        });
-        renderData(filteredData);
-    }
-
-    fetchSheetsData();
-</script>
-
-</body>
-</html>
-
+                        victim: columns[8] ? columns[8].trim() : '',
+    
