@@ -227,7 +227,7 @@
     </div>
 
 </div>
-
+    
 <script>
     const csvUrl = "https://docs.google.com/spreadsheets/d/1YXbAQGsxEgFmy4oxX8cOeCynRdyoMRjydpxe2HzsyuM/export?format=csv";
     let scammerData = [];
@@ -270,5 +270,72 @@
                         contact: columns[5] ? columns[5].trim() : '',        
                         evidence: columns[6] ? columns[6].trim() : '',       
                         reporter: columns[7] ? columns[7].trim() : '',       
-                        victim: columns[8] ? columns[8].trim() : '',
-    
+                        victim: columns[8] ? columns[8].trim() : '',         
+                        times: columns[9] ? columns[9].trim() : ''           
+                    });
+                }
+            }
+
+            document.getElementById('loadingStatus').style.display = 'none';
+            document.getElementById('searchInput').disabled = false;
+            document.getElementById('searchInput').placeholder = "Ketik nama, game, kontak, atau info...";
+            
+            renderData(scammerData);
+
+        } catch (error) {
+            console.error("Gagal memuat data dari Google Sheets:", error);
+            document.getElementById('loadingStatus').innerHTML = "❌ Gagal memuat database. Pastikan akses Google Sheet diatur ke 'Anyone with the link'.";
+        }
+    }
+
+    const scammerList = document.getElementById('scammerList');
+    const noResult = document.getElementById('noResult');
+
+    function renderData(data) {
+        scammerList.innerHTML = "";
+        if (data.length === 0) {
+            noResult.style.display = "block";
+            return;
+        }
+        noResult.style.display = "none";
+        
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'scammer-item';
+            
+            let evidenceHTML = item.evidence;
+            if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
+                evidenceHTML = `<a href="${item.evidence}" target="_blank">Lihat Bukti Foto/Screenshot 🔗</a>`;
+            }
+
+            div.innerHTML = `
+                <span class="scammer-name">👤 ${item.name || 'Tanpa Nama'}</span>
+                <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
+                <span class="scammer-info">📞 <strong>Kontak/ID:</strong> ${item.contact || '-'}</span>
+                <span class="scammer-info">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
+                <div class="scammer-meta">
+                    🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
+                    🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
+                    📅 <strong>Waktu Kejadian:</strong> ${item.times || '-'}
+                </div>
+            `;
+            scammerList.appendChild(div);
+        });
+    }
+
+    function searchScammer() {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        const filteredData = scammerData.filter(item => {
+            return (item.name && item.name.toLowerCase().includes(keyword)) || 
+                   (item.contact && item.contact.toLowerCase().includes(keyword)) || 
+                   (item.gameOrAnything && item.gameOrAnything.toLowerCase().includes(keyword)) ||
+                   (item.reporter && item.reporter.toLowerCase().includes(keyword));
+        });
+        renderData(filteredData);
+    }
+
+    fetchSheetsData();
+</script>
+
+</body>
+</html>
