@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rucoy Online ScammerL List</title>
+    <title>Rucoy Online Scammer List</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -33,7 +33,7 @@
             margin-bottom: 15px;
         }
         
-        /* CSS UNTUK BARIS KONTAK ADMIN DI ATAS */
+        /* ADMIN CONTACTS HEADER */
         .admin-contact-top {
             display: flex;
             flex-wrap: wrap;
@@ -55,6 +55,12 @@
         }
         .btn-discord { background-color: #5865F2; }
         .btn-wa-top { background-color: #25D366; }
+        
+        /* DISCORD INVITE LINK HOVER STYLING */
+        a.btn-discord:hover {
+            opacity: 0.9;
+            text-decoration: underline;
+        }
 
         .search-box {
             width: 100%;
@@ -95,13 +101,6 @@
             color: #555;
             margin-bottom: 6px;
         }
-        .scammer-meta {
-            font-size: 12px;
-            color: #888;
-            background: #f9f9f9;
-            padding: 6px 10px;
-            border-radius: 4px;
-        }
         .scammer-proof a {
             color: #337ab7;
             text-decoration: none;
@@ -110,6 +109,40 @@
         .scammer-proof a:hover {
             text-decoration: underline;
         }
+        
+        /* UPDATED VERTICAL METADATA BOX */
+        .scammer-meta {
+            font-size: 13px;
+            color: #666;
+            background: #f9f9f9;
+            padding: 10px 12px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 6px;
+        }
+        
+        /* DISCORD WIDGET BOX styling */
+        .discord-status-box {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .discord-status-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #4a5568;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
         .no-result {
             text-align: center;
             color: #999;
@@ -122,9 +155,9 @@
             padding: 20px;
         }
         
-        /* CSS UNTUK FOOTER (SUPPORT BOX) */
+        /* FOOTER / SUPPORT BOX */
         .support-box {
-            margin-top: 30px;
+            margin-top: 25px;
             padding: 20px;
             background-color: #f8f9fa;
             border-top: 3px solid #d9534f;
@@ -157,7 +190,7 @@
         }
         .btn-report:hover { background-color: #c9302c; }
 
-        /* CSS DONASI / DONATION LINKS */
+        /* DONATION LINKS */
         .donation-title {
             font-size: 13px;
             font-weight: bold;
@@ -193,25 +226,30 @@
 <body>
 
 <div class="container">
-    <h2>🔥Scammer List</h2>
+    <h2>🎮 Rucoy Online Scammer List</h2>
     <p class="subtitle">Search for a scammer's name, contact, or information in real-time.</p>
     
     <div class="admin-contact-top">
         <a href="https://wa.me/message/CZPONFJGCVW4L1" target="_blank" class="btn-admin btn-wa-top">💬 WA Admin</a>
         <span class="btn-admin btn-discord">🎮 Discord: @mihaya7</span>
-        <span class="btn-admin btn-discord">🎮 Discord: @7notann</span>
+        <a href="https://discord.gg/dGTGgHFGkr" target="_blank" class="btn-admin btn-discord">🔗 Discord Server</a>
     </div>
 
-    <input type="text" id="searchInput" class="search-box" placeholder="Menghubungkan database..." oninput="searchScammer()" disabled>
+    <input type="text" id="searchInput" class="search-box" placeholder="Connecting to database..." oninput="searchScammer()" disabled>
 
-    <div id="loadingStatus" class="loading">Loading list of scammer..</div>
+    <div id="loadingStatus" class="loading">Loading list of scammers...</div>
     <div id="scammerList"></div>
-    <div id="noResult" class="no-result">data not found</div>
+    <div id="noResult" class="no-result">Data not found</div>
+
+    <div class="discord-status-box">
+        <div class="discord-status-title">💬 Our Discord Community Status</div>
+        <iframe src="https://discord.com/api/guilds/1210878512192131102/embed?theme=dark" width="100%" height="150" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+    </div>
 
     <div class="support-box">
-        <div class="support-title">📢You Want To Report</div>
+        <div class="support-title">📢 File a Report</div>
         <p class="support-desc">
-            If you have recently been a victim of scamm or would like to submit a report, please fill out the complaint form below..
+            If you have recently been a victim of a scam or would like to submit a report, please fill out the complaint form below.
         </p>
         
         <a href="https://tally.so/r/LZygZp" target="_blank" class="btn-report">📝 Report Scammer</a>
@@ -250,7 +288,7 @@
         return r;
     }
 
-        async function fetchSheetsData() {
+    async function fetchSheetsData() {
         try {
             const response = await fetch(csvUrl);
             if (!response.ok) throw new Error("Network response error");
@@ -258,7 +296,6 @@
             const csvText = await response.text();
             const rows = parseCSV(csvText);
             
-            // Loop starting from index 1 to bypass the table header row
             for (let i = 1; i < rows.length; i++) {
                 const columns = rows[i];
                 if (columns.length >= 6) {
@@ -268,12 +305,11 @@
                     let rawVictim = columns[8] ? columns[8].trim() : '';
                     let rawTimes = columns[9] ? columns[9].trim() : '';
 
-                    // FIX LOGIC: If the second image link leaked into the reporter column
                     if (rawReporter.startsWith('http://') || rawReporter.startsWith('https://')) {
-                        rawEvidence += ', ' + rawReporter; // Combine links into evidence
-                        rawReporter = columns[8] ? columns[8].trim() : 'Anonymous'; // Shift reporter from victim column
-                        rawVictim = columns[9] ? columns[9].trim() : '-'; // Shift victim from times column
-                        rawTimes = columns[10] ? columns[10].trim() : '-'; // Shift times from next column
+                        rawEvidence += ', ' + rawReporter; 
+                        rawReporter = columns[8] ? columns[8].trim() : 'Anonymous'; 
+                        rawVictim = columns[9] ? columns[9].trim() : '-'; 
+                        rawTimes = columns[10] ? columns[10].trim() : '-'; 
                     }
 
                     scammerData.push({
@@ -293,20 +329,20 @@
 
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('searchInput').disabled = false;
-            document.getElementById('searchInput').placeholder = "Type name, game, contact info, or keywords...";
+            document.getElementById('searchInput').placeholder = "Type name, contact info, or keywords...";
             
             renderData(scammerData);
 
         } catch (error) {
             console.error("Failed to load data from Google Sheets:", error);
-            document.getElementById('loadingStatus').innerHTML = "❌ Failed to load database. Please ensure the Google Sheet access is set to 'Anyone with the link'.";
+            document.getElementById('loadingStatus').innerHTML = "❌ Failed to load database. Please ensure the database access is set to 'Anyone with the link'.";
         }
-     }
+    }
 
     const scammerList = document.getElementById('scammerList');
     const noResult = document.getElementById('noResult');
 
-        function renderData(data) {
+    function renderData(data) {
         scammerList.innerHTML = "";
         if (data.length === 0) {
             noResult.style.display = "block";
@@ -318,46 +354,42 @@
             const div = document.createElement('div');
             div.className = 'scammer-item';
             
-            // LOGIKA BARU: Memproses Bukti/Evidence (bisa mendeteksi jika ada lebih dari 1 link)
             let evidenceHTML = '';
             
             if (item.evidence) {
-                // Memisahkan isi kolom berdasarkan koma atau spasi jika user mengupload lebih dari 1 gambar
                 const proofLinks = item.evidence.split(/[\s,]+/);
                 let linksArray = [];
                 
                 proofLinks.forEach((link, index) => {
                     const cleanLink = link.trim();
                     if (cleanLink.startsWith('http://') || cleanLink.startsWith('https://')) {
-                        linksArray.push(`<a href="${cleanLink}" target="_blank">screenshoot/proof ${index + 1} 🔗</a>`);
+                        linksArray.push(`<a href="${cleanLink}" target="_blank">screenshot/proof ${index + 1} 🔗</a>`);
                     }
                 });
                 
-                // Jika ditemukan link valid, gabungkan dengan pemisah. Jika tidak, tampilkan teks biasa.
                 if (linksArray.length > 0) {
                     evidenceHTML = linksArray.join(' | ');
                 } else {
-                    evidenceHTML = item.evidence; // Jika isinya teks biasa/bukan URL
+                    evidenceHTML = item.evidence; 
                 }
             } else {
-                evidenceHTML = 'Tidak ada bukti terlampir';
+                evidenceHTML = 'No evidence attached';
             }
 
             div.innerHTML = `
                 <span class="scammer-name">👤 ${item.name || 'no name'}</span>
-                <span class="scammer-game">🎮 Descriptions: ${item.details || '-'}</span>
+                <span class="scammer-game">🎮 Descriptions: ${item.gameOrAnything || '-'}</span>
                 <span class="scammer-info">📞 <strong>Contact/ID:</strong> ${item.contact || '-'}</span>
-                <span class="scammer-info">📂 <strong>proof:</strong> ${evidenceHTML}</span>
+                <span class="scammer-info">📂 <strong>Proof:</strong> ${evidenceHTML}</span>
                 <div class="scammer-meta">
-                    🚨 <strong>reporter:</strong> ${item.reporter || 'Anonim'} | 
-                    🎯 <strong>Victim:</strong> ${item.victim || '-'} | 
-                    📅 <strong>Date of time:</strong> ${item.times || '-'}
+                    <div>🚨 <strong>Reporter:</strong> ${item.reporter || 'Anonymous'}</div>
+                    <div>🎯 <strong>Victim:</strong> ${item.victim || '-'}</div>
+                    <div>📅 <strong>Date of time:</strong> ${item.times || '-'}</div>
                 </div>
             `;
             scammerList.appendChild(div);
         });
-        }
-    
+    }
 
     function searchScammer() {
         const keyword = document.getElementById('searchInput').value.toLowerCase();
