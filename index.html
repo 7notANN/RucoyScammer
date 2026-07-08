@@ -111,46 +111,58 @@
 </div>
 
 <script>
-    // Link CSV Google Sheets kamu yang sudah dikonversi untuk export data
     const csvUrl = "https://docs.google.com/spreadsheets/d/1YXbAQGsxEgFmy4oxX8cOeCynRdyoMRjydpxe2HzsyuM/export?format=csv";
-    
     let scammerData = [];
 
-    // Fungsi membaca data CSV dan memprosesnya
+    // Fungsi canggih untuk memisahkan baris CSV dengan aman
+    function parseCSV(text) {
+        let p = '', r = [];
+        let q = false;
+        let row = [''];
+        for (let i = 0; i < text.length; i++) {
+            let c = text[i];
+            if (c === '"') { q = !q; }
+            else if (c === ',' && !q) { row.push(''); }
+            else if ((c === '\r' || c === '\n') && !q) {
+                if (c === '\r' && text[i+1] === '\n') { i++; }
+                r.push(row);
+                row = [''];
+            } else { row[row.length - 1] += c; }
+        }
+        if (row.length > 1 || row[0] !== '') { r.push(row); }
+        return r;
+    }
+
     async function fetchSheetsData() {
         try {
             const response = await fetch(csvUrl);
+            if (!response.ok) throw new Error("Respons jaringan bermasalah");
+            
             const csvText = await response.text();
+            const rows = parseCSV(csvText);
             
-            // Parsing CSV sederhana (memisahkan berdasarkan baris)
-            const rows = csvText.split("\n");
-            
-            // Looping dimulai dari indeks 1 untuk melewati baris header pertama (baris judul kolom)
+            // Loop dimulai dari indeks 1 (melewati baris header atas)
             for (let i = 1; i < rows.length; i++) {
-                if (!rows[i].trim()) continue; // Skip jika baris kosong
+                const columns = rows[i];
                 
-                // Memisahkan kolom dengan regex agar aman dari koma di dalam tanda kutip teks
-                const columns = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                
+                // Pastikan kolom terisi minimal sampai data kontak
                 if (columns.length >= 6) {
-                    // Membersihkan tanda kutip ganda ekstra jika ada di teks
-                    const clean = (text) => text ? text.replace(/^"|"$/g, '').trim() : '';
-
                     scammerData.push({
-                        submissionId: clean(columns[0]),
-                        responderId: clean(columns[1]),
-                        submittedAt: clean(columns[2]),
-                        gameOrAnything: clean(columns[3]), // Kolom "-write anything-"
-                        name: clean(columns[4]),           // Scammer Nickname
-                        contact: clean(columns[5]),        // Scammer Contact Info
-                        evidence: clean(columns[6]),       // Evidence/Proofs
-                        reporter: clean(columns[7]),       // Reporter
-                        victim: clean(columns[8]),         // Victim
-                        times: clean(columns[9])           // Times it happen
+                        submissionId: columns[0] ? columns[0].trim() : '',
+                        responderId: columns[1] ? columns[1].trim() : '',
+                        submittedAt: columns[2] ? columns[2].trim() : '',
+                        gameOrAnything: columns[3] ? columns[3].trim() : '', 
+                        name: columns[4] ? columns[4].trim() : '',           
+                        contact: columns[5] ? columns[5].trim() : '',        
+                        evidence: columns[6] ? columns[6].trim() : '',       
+                        reporter: columns[7] ? columns[7].trim() : '',       
+                        victim: columns[8] ? columns[8].trim() : '',         
+                        times: columns[9] ? columns[9].trim() : ''           
                     });
                 }
             }
 
+            // Sembunyikan loading status jika data berhasil dimuat
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('searchInput').disabled = false;
             document.getElementById('searchInput').placeholder = "Ketik nama, game, kontak, atau info...";
@@ -166,7 +178,6 @@
     const scammerList = document.getElementById('scammerList');
     const noResult = document.getElementById('noResult');
 
-    // Fungsi menampilkan data ke HTML
     function renderData(data) {
         scammerList.innerHTML = "";
         if (data.length === 0) {
@@ -179,7 +190,6 @@
             const div = document.createElement('div');
             div.className = 'scammer-item';
             
-            // Logika untuk menampilkan bukti/evidence jika berupa link/URL
             let evidenceHTML = item.evidence;
             if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
                 evidenceHTML = `<a href="${item.evidence}" target="_blank">Lihat Bukti Foto/Screenshot 🔗</a>`;
@@ -189,7 +199,7 @@
                 <span class="scammer-name">👤 ${item.name || 'Tanpa Nama'}</span>
                 <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
                 <span class="scammer-info">📞 <strong>Kontak/ID:</strong> ${item.contact || '-'}</span>
-                <span class="scammer-info class="scammer-proof"">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
+                <span class="scammer-info">📂 <strong>Bukti:</strong> ${evidenceHTML || 'Tidak ada bukti terlampir'}</span>
                 <div class="scammer-meta">
                     🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
                     🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
@@ -200,21 +210,16 @@
         });
     }
 
-    // Fungsi Pencarian Real-time (Mencari berdasarkan Nama, Kontak, atau Game)
     function searchScammer() {
         const keyword = document.getElementById('searchInput').value.toLowerCase();
-        
         const filteredData = scammerData.filter(item => {
             return (item.name && item.name.toLowerCase().includes(keyword)) || 
                    (item.contact && item.contact.toLowerCase().includes(keyword)) || 
-                   (item.gameOrAnything && item.gameOrAnything.toLowerCase().includes(keyword)) ||
-                   (item.reporter && item.reporter.toLowerCase().includes(keyword));
+                   (item.gameOrAnything && item.gameOrAnything.toLowerCase().includes(keyword));
         });
-        
         renderData(filteredData);
     }
 
-    // Jalankan pengambilan data saat halaman dibuka
     fetchSheetsData();
 </script>
 
