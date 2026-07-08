@@ -123,7 +123,7 @@
             margin-top: 6px;
         }
         
-        /* DISCORD WIDGET BOX styling */
+        /* DISCORD WIDGET BOX AT THE BOTTOM */
         .discord-status-box {
             margin-top: 25px;
             padding: 15px;
@@ -141,6 +141,11 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
+        }
+        .discord-status-box iframe {
+            max-width: 100%;
+            display: block;
+            margin: 0 auto;
         }
 
         .no-result {
@@ -231,8 +236,8 @@
     
     <div class="admin-contact-top">
         <a href="https://wa.me/message/CZPONFJGCVW4L1" target="_blank" class="btn-admin btn-wa-top">💬 WA Admin</a>
-        <span class="btn-admin btn-discord">🎮 Discord: @mihaya7</span>
-        <a href="https://discord.gg/dGTGgHFGkr" target="_blank" class="btn-admin btn-discord">🔗 Discord Server</a>
+        <span class="btn-admin btn-discord"> @7notann $ @mihaya7</span>
+        <a href="https://discord.gg/AG7UsxYxeu" target="_blank" class="btn-admin btn-discord">🔗 Discord Server</a>
     </div>
 
     <input type="text" id="searchInput" class="search-box" placeholder="Connecting to database..." oninput="searchScammer()" disabled>
@@ -240,11 +245,6 @@
     <div id="loadingStatus" class="loading">Loading list of scammers...</div>
     <div id="scammerList"></div>
     <div id="noResult" class="no-result">Data not found</div>
-
-    <div class="discord-status-box">
-        <div class="discord-status-title">💬 Our Discord Community Status</div>
-        <iframe src="https://discord.com/api/guilds/1210878512192131102/embed?theme=dark" width="100%" height="150" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-    </div>
 
     <div class="support-box">
         <div class="support-title">📢 File a Report</div>
@@ -261,6 +261,14 @@
             <a href="https://paypal.me/wrongsyntax" target="_blank" class="btn-donate btn-paypal">🔷 PayPal</a>
             <a href="https://kofi.com/mihaya" target="_blank" class="btn-donate btn-kofi">☕ Ko-fi</a>
             <a href="https://sociabuzz.com/mihaya" target="_blank" class="btn-donate btn-sociabuzz">🚀 SociaBuzz</a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+
+        <!-- DISCORD SERVER LIVE STATUS BOX (PLACED AT THE ABSOLUTE BOTTOM) -->
+        <div class="discord-status-box">
+            <div class="discord-status-title">Rucoy Online Player Community</div>
+            <iframe src="https://discord.com/widget?id=1524308620303532033&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
         </div>
     </div>
 
@@ -326,6 +334,15 @@
                     });
                 }
             }
+
+            // SORT DATA AUTOMATICALLY BY SCAMMER NAME (A-Z)
+            scammerData.sort((a, b) => {
+                let nameA = (a.name || '').toLowerCase();
+                let nameB = (b.name || '').toLowerCase();
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0;
+            });
 
             document.getElementById('loadingStatus').style.display = 'none';
             document.getElementById('searchInput').disabled = false;
