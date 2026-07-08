@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Blacklist Scammer Game</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #d9534f;
+            margin-top: 0;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            margin: 20px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .search-box:focus {
+            border-color: #d9534f;
+            outline: none;
+        }
+        .scammer-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+        .scammer-item:last-child {
+            border-bottom: none;
+        }
+        .scammer-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #111;
+        }
+        .scammer-game {
+            font-size: 14px;
+            color: #f0ad4e;
+            font-weight: 600;
+            margin: 2px 0;
+        }
+        .scammer-info {
+            font-size: 14px;
+            color: #555;
+        }
+        .no-result {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎮 Database Blacklist Scammer</h2>
+    <p class="subtitle">Cari nama, ID game, atau kontak penipu sebelum melakukan transaksi.</p>
+    
+    <!-- Kolom Pencarian -->
+    <input type="text" id="searchInput" class="search-box" placeholder="Ketik nama, game, atau info lainnya..." oninput="searchScammer()">
+
+    <!-- Wadah List Data -->
+    <div id="scammerList"></div>
+    <div id="noResult" class="no-result">Data tidak ditemukan. Tetap waspada!</div>
+</div>
+
+<script>
+    // INPUT DATA SCAMMER DI SINI
+    // Kamu bisa menambah baris baru sesuai format yang ada
+    const scammerData = [
+        { name: "Budi_Gamer99", game: "Mobile Legends", info: "ID: 12345678, Modus: Jual beli akun via pulsa palsu" },
+        { name: "Rian_TopUp", game: "Free Fire", info: "No WA: 08123456789, Modus: Jual diamond ilegal harganya miring" },
+        { name: "Siska_Store", game: "PUBG Mobile", info: "ID: 98765432, Modus: Rekber kloningan / palsu" },
+        { name: "Xyz_Gamer", game: "Genshin Impact", info: "Modus: Akun di-hack balik setelah dijual" }
+    ];
+
+    const scammerList = document.getElementById('scammerList');
+    const noResult = document.getElementById('noResult');
+
+    // Fungsi untuk menampilkan semua data saat pertama kali load
+    function renderData(data) {
+        scammerList.innerHTML = "";
+        if (data.length === 0) {
+            noResult.style.display = "block";
+            return;
+        }
+        noResult.style.display = "none";
+        
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'scammer-item';
+            div.innerHTML = `
+                <span class="scammer-name">${item.name}</span>
+                <span class="scammer-game">Game: ${item.game}</span>
+                <span class="scammer-info">${item.info}</span>
+            `;
+            scammerList.appendChild(div);
+        });
+    }
+
+    // Fungsi Pencarian Real-time
+    function searchScammer() {
+        const keyword = document.getElementById('searchInput').value.toLowerCase();
+        
+        const filteredData = scammerData.filter(item => {
+            return item.name.toLowerCase().includes(keyword) || 
+                   item.game.toLowerCase().includes(keyword) || 
+                   item.info.toLowerCase().includes(keyword);
+        });
+        
+        renderData(filteredData);
+    }
+
+    // Jalankan fungsi tampil data pertama kali
+    renderData(scammerData);
+</script>
+
+</body>
+</html>
