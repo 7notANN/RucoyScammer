@@ -218,7 +218,7 @@
         
         <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
         
-        <div class="donation-title">☕ Dukung Server & Project Ini</div>
+        <div class="donation-title">☕ Support me</div>
         <div class="donation-links">
             <a href="https://paypal.me/wrongsyntax" target="_blank" class="btn-donate btn-paypal">🔷 PayPal</a>
             <a href="https://kofi.com/mihaya" target="_blank" class="btn-donate btn-kofi">☕ Ko-fi</a>
@@ -305,18 +305,18 @@
             
             let evidenceHTML = item.evidence;
             if (item.evidence.startsWith('http://') || item.evidence.startsWith('https://')) {
-                evidenceHTML = `<a href="${item.evidence}" target="_blank">See proof/Screenshot Evidence 🔗</a>`;
+                evidenceHTML = `<a href="${item.evidence}" target="_blank">See proof/Screenshot🔗</a>`;
             }
 
             div.innerHTML = `
                 <span class="scammer-name">👤 ${item.name || 'no name'}</span>
-                <span class="scammer-game">🎮 Game/Kategori: ${item.gameOrAnything || '-'}</span>
-                <span class="scammer-info">📞 <strong>Contak/ID:</strong> ${item.contact || '-'}</span>
+                <span class="scammer-game">🎮 Description: ${item.gameOrAnything || '-'}</span>
+                <span class="scammer-info">📞 <strong>Contact/ID:</strong> ${item.contact || '-'}</span>
                 <span class="scammer-info">📂 <strong>proofs:</strong> ${evidenceHTML || 'No attachments'}</span>
                 <div class="scammer-meta">
                     🚨 <strong>Pelapor:</strong> ${item.reporter || 'Anonim'} | 
                     🎯 <strong>Korban:</strong> ${item.victim || '-'} | 
-                    📅 <strong>Waktu Kejadian:</strong> ${item.times || '-'}
+                    📅 <strong>date of time:</strong> ${item.times || '-'}
                 </div>
             `;
             scammerList.appendChild(div);
